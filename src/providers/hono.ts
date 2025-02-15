@@ -1,17 +1,17 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import type {} from '../lexicon';
-import type { Brand, LolAtmogusDefsActivity } from '@atcute/client/lexicons';
+import type {} from '../lexicon.js';
+import type { DetectedPresence } from "../types.js";
 
 const app = new Hono();
 
 app.use('*', cors());
 
-const latestPresencePerSource: Record<string, Brand.Union<LolAtmogusDefsActivity.Presence>[]> = {};
+const latestPresencePerSource: Record<string, DetectedPresence[]> = {};
 
 app.post('/api/:source/activity', async (c) => {
-    const json: Brand.Union<LolAtmogusDefsActivity.Presence>[] = await c.req.json();
+    const json: DetectedPresence[] = await c.req.json();
 
     latestPresencePerSource[c.req.param('source')] = json;
 
@@ -28,6 +28,6 @@ const server = serve(
     },
 );
 
-export async function fetchLatestHonoPresence(): Promise<Brand.Union<LolAtmogusDefsActivity.Presence>[]> {
+export async function fetchLatestHonoPresence(): Promise<DetectedPresence[]> {
     return Promise.resolve(Object.values(latestPresencePerSource).flat());
 }
