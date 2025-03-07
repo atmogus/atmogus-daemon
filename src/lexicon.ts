@@ -8,6 +8,7 @@ declare module "@atcute/client/lexicons" {
     /** A record representing one or more application presence data. */
     interface Record {
       $type: "lol.atmogus.activity.presences";
+      activityEndedAt?: string;
       createdAt: string;
       presences: LolAtmogusDefsActivity.Presence[];
     }

@@ -1,3 +1,4 @@
+import type { ActivityPresenceEvent, DetectedPresence } from '@/types.js';
 import type { Brand, LolAtmogusDefsActivity } from '@atcute/client/lexicons';
 import { JSDOM } from 'jsdom';
 
@@ -26,7 +27,7 @@ async function getSteamRichPresence(userId: string) {
 }
 
 // TODO sync this interval to the activity writes interval
-export async function fetchLatestSteamPresence(): Promise<Brand.Union<LolAtmogusDefsActivity.Presence>[]> {
+export async function fetchLatestSteamPresence(): Promise<DetectedPresence[]> {
     const userId = process.env.STEAMID64!;
     const { appId, gameName, richPresence } = await getSteamRichPresence(userId);
 
@@ -34,7 +35,7 @@ export async function fetchLatestSteamPresence(): Promise<Brand.Union<LolAtmogus
 
     console.info('Got Steam Rich Presence', { appId, gameName, richPresence });
 
-    return [{
+    let presence = {
         $type: 'lol.atmogus.defs.activity#presence',
         name: gameName ?? 'Steam',
         state: richPresence,
@@ -44,5 +45,14 @@ export async function fetchLatestSteamPresence(): Promise<Brand.Union<LolAtmogus
             gameName,
             appId: appId ? parseInt(appId) : undefined,
         },
-    }] satisfies Brand.Union<LolAtmogusDefsActivity.Presence>[]; 
+    } satisfies Brand.Union<LolAtmogusDefsActivity.Presence>
+
+    let detectedPresence = {
+        id: presence.name,
+        presences: [ {
+            presence
+        } ]
+    };
+
+    return [ detectedPresence ]; 
 }
